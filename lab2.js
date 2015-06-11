@@ -50,7 +50,25 @@ function assert(expression, failureMessage) {
  with Dowington.
 */
 
-var hoursSpentInDowington; // TODO: assign me the value of the
+var Blob = function() {
+
+  this.eat = function(humans, startRate) {
+    var i = 0;
+    var totalEaten = 0;
+
+    while (totalEaten < humans) {
+      totalEaten += startRate;
+      startRate++;
+      i++;
+    }
+    return i;
+  };
+
+};
+
+var blob = new Blob();
+
+var hoursSpentInDowington = blob.eat(1000, 1); // TODO: assign me the value of the
                            // above calculation (how long it took
                            // the blob to eat Dowington)
 
@@ -58,14 +76,26 @@ var hoursSpentInDowington; // TODO: assign me the value of the
 // town, and the starting consumption rate, and returns the number
 // of hours the blob needs to ooze its way through that town.
 
-function hoursToOoze(population, peoplePerHour) {
-  // TODO: implement me based on the instructions above.
-  // Be sure to then assign me to the Blob's prototype.
-}
+Blob.prototype.hoursToOoze = function(population, peoplePerHour) {
+  var i = 0;
+  var totalEaten = 0;
+
+  while (totalEaten < population) {
+    totalEaten += peoplePerHour;
+    peoplePerHour++;
+    i++;
+  }
+  return i;
+};
 
 assert(blob.hoursToOoze(0, 1) === 0, 'no people means no time needed.');
 assert(blob.hoursToOoze(1000, 1) === hoursSpentInDowington,
   'hoursSpentInDowington should match hoursToOoze\'s result for 1000');
+assert(blob.hoursToOoze(-10, 1) === 0,
+  'If no people means no time, then how long should negative people take?');
+assert(blob.hoursToOoze(1000, 1000) === 1, 'This should only take a lunch hour.');
+assert(blob.hoursToOoze(7000000000, 1) > (7 * 24),
+  'Surely, the world should take more than a week');
 
 // TODO: write three more assertions like the two above, testing out
 // the hoursToOoze method.
@@ -85,13 +115,22 @@ var hello = {
 // speak, and method (that you'll place on the prototype) called
 // sayHello.
 
-function SentientBeing () {
+function SentientBeing(homePlanet, tongue) {
+  this.homePlanet = homePlanet;
+  this.tongue = tongue;
   // TODO: specify a home planet and a language
   // you'll need to add parameters to this constructor
 }
 
+var Klingon = new SentientBeing('Qo\'noS', 'klingon');
+var Human = new SentientBeing('Earth', 'federation standard');
+var Romulan = new SentientBeing('Romulus', 'romulan');
+
 // sb is a SentientBeing object
-function sayHello (sb) {
+SentientBeing.prototype.sayHello = function(sb) {
+  console.log(hello[SentientBeing.tongue]);
+  return hello[sb.tongue];
+};
     // TODO: say hello prints out (console.log's) hello in the
     // language of the speaker, but returns it in the language
     // of the listener (the sb parameter above).
@@ -99,13 +138,22 @@ function sayHello (sb) {
     // to do the translating
 
     //TODO: put this on the SentientBeing prototype
-  }
 
 // TODO: create three subclasses of SentientBeing, one for each
 // species above (Klingon, Human, Romulan).
 
 assert((new Human()).sayHello(new Klingon()) === 'nuqneH',
   'the klingon should hear nuqneH');
+assert((new Human()).sayHello(new Romulan()) === 'Jolan\'tru',
+  'the romulan should hear Jolan\'tru');
+assert((new Romulan()).sayHello(new Human()) === 'hello',
+  'the Human should hear hello');
+assert((new Klingon()).sayHello(new Human()) === 'hello',
+  'the romulan should hear hello');
+assert((new Romulan()).sayHello(new Klingon()) === 'nuqneH',
+  'the klingon should hear nuqneH');
+assert((new Klingon()).sayHello(new Romulan()) === 'Jolan\'tru',
+  'the romulan should hear Jolan\'tru');
 
 // TODO: write five more assertions, to complete all the possible
 // greetings between the three types of sentient beings you created above.
@@ -118,32 +166,55 @@ assert((new Human()).sayHello(new Klingon()) === 'nuqneH',
 // will test your code)
 //*********************************************************
 
+var cities = ['Chicago', 'Paris', 'Los Angeles', 'Vancouver'];
+var numbers1 = [1, 2, 3, 4, 5];
+var numbers2 = [10, 15, 20, 25, 30];
+var numbers3 = [37, 1, 12, 70, 18];
+var allNumbers = [numbers1, numbers2, numbers3];
+
 function lastLetterSort(stringArray) {
+
   function byLastLetter(a, b) {
-    //TODO: implement me. sort the strings in alphabetical
-    // order using their last letter
-    // Read this about how the sort function works:
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
-    // this byLastLetter function is a "compare function"
-    // And check out the "comparing strings" section  here:
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
+
+    if ((a.charAt(a.length - 1)) < (b.charAt(b.length - 1))) {
+      return -1;
+    } else if ((a.charAt(a.length - 1)) > (b.charAt(b.length - 1))) {
+      return 1;
+    }
+    return 0;
   }
   stringArray.sort(byLastLetter);
 }
 
 function sumArray(numberArray) {
+
   var sum = 0;
-  // TODO: implement me using forEach
+
+  numberArray.forEach(function(value) {
+    sum += value;
+  });
   return sum;
 }
 
 function sumSort(arrayOfArrays) {
-  arrayOfArrays.sort(function(item) {
-    // TODO: implement me using sumArray
-    //  order the arrays based on the sum of the numbers
-    //  inside each array
+  var sumSortArray = [];
+
+  arrayOfArrays.forEach(function(array) {
+    sumSortArray.push(sumArray(array));
   });
+
+  arrayOfArrays.sort(sumSortArray);
+
+  return sumSortArray;
+
 }
+
+assert((sumArray(numbers1)) === 15,
+  'Almost only counts in horseshoes and hand grenades.');
+assert((lastLetterSort(cities)) === ['Chicago', 'Vancouver', 'Paris', 'Los Angeles'],
+  'Those are nice cities, but they\'re not in the right order');
+assert((sumSort(allNumbers)) === [15, 100, 138],
+  'No cigar, try again.');
 
 //*********************************************************
 // PROBLEM 4: Cleanup: 10 points
